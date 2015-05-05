@@ -102,16 +102,16 @@ class WP_RedirectAndLog {
 
 			$post_url = get_post_meta( $post_id, 'redirect_and_log_url', true );
 
-			$wpdb->insert(
-				$table_name,
-				array(
-					'time' => current_time( 'mysql' ),
-					'post_id' => $post_id,
-					'url' => $post_url,
-				)
-			);
-
 			if ( strlen( $post_url ) > 0 ) {
+				$wpdb->insert(
+					$table_name,
+					array(
+						'time' => current_time( 'mysql' ),
+						'post_id' => $post_id,
+						'url' => $post_url,
+					)
+				);
+
 				wp_redirect( $post_url );
 				exit();
 			}
