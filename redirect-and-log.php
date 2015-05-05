@@ -51,6 +51,7 @@ class WP_RedirectAndLog {
 			time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
 			post_id bigint(20) NOT NULL,
 			url text NOT NULL,
+			meta text,
 			UNIQUE KEY id (id)
 		) $charset_collate;";
 
@@ -101,6 +102,7 @@ class WP_RedirectAndLog {
 			$table_name = $wpdb->prefix . 'redirect_and_log';
 
 			$post_url = get_post_meta( $post_id, 'redirect_and_log_url', true );
+			$ip = $_SERVER[ 'REMOTE_ADDR' ];
 
 			if ( strlen( $post_url ) > 0 ) {
 				$wpdb->insert(
@@ -109,6 +111,7 @@ class WP_RedirectAndLog {
 						'time' => current_time( 'mysql' ),
 						'post_id' => $post_id,
 						'url' => $post_url,
+						'meta' => $ip,
 					)
 				);
 
