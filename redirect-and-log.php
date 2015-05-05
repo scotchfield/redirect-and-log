@@ -31,10 +31,31 @@ class WP_RedirectAndLog {
 
 		self::$instance = $this;
 
+		register_activation_hook( __FILE__, array( $this, 'install' ) );
+
 		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ) );
 		add_action( 'save_post', array( $this, 'save_post_meta' ) );
 
 		add_action( 'template_redirect', array( $this, 'do_redirect' ) );
+	}
+
+	public function install() {
+		global $wpdb;
+
+		$table_name = $wpdb->prefix . 'redirect_and_log';
+
+		$charset_collate = $wpdb->get_charset_collate();
+
+		$sql = "CREATE TABLE $table_name (
+			id mediumint(9) NOT NULL AUTO_INCREMENT,
+			time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+			post_id bigint(20) NOT NULL,
+			url text NOT NULL,
+			UNIQUE KEY id (id)
+		) $charset_collate;";
+
+		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+		dbDelta( $sql );
 	}
 
 	/**
@@ -72,10 +93,24 @@ class WP_RedirectAndLog {
 	}
 
 	public function do_redirect() {
+		global $wpdb;
+
 		$post_id = get_the_ID();
 
 		if ( $post_id !== false ) {
+			$table_name = $wpdb->prefix . 'redirect_and_log';
+
 			$post_url = get_post_meta( $post_id, 'redirect_and_log_url', true );
+
+			$wpdb->insert(
+				$table_name,
+				array(
+					'time' => current_time( 'mysql' ),
+					'post_id' => $post_id,
+					'url' => $post_url,
+				)
+			);
+
 			if ( strlen( $post_url ) > 0 ) {
 				wp_redirect( $post_url );
 				exit();
