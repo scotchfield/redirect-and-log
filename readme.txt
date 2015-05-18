@@ -13,7 +13,7 @@ visit.
 
 == Description ==
 
-Redirect and Log is a straightforward, no nonsense way to track visits to
+Redirect and Log is a straightforward, no-nonsense way to track visits to
 a page, then to send a visitor somewhere else.
 
 A new meta box will be added to the edit post page. If the value is not empty,
